@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable-v24/background_note_color_2.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable-v24/background_note_color_3.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable-v24/background_note_color_4.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable-v24/background_note_color_5.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_add_button.xml" value="0.17962962962962964" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_dialog.xml" value="0.19074074074074074" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_done_button.xml" value="0.17962962962962964" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_miscellaneous.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_note.xml" value="0.37447916666666664" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_note_color_1.xml" value="0.35520833333333335" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_search.xml" value="0.3703125" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/background_subtitle_indicator.xml" value="0.17962962962962964" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/drawable/ic_done.xml" value="0.20462962962962963" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/font/ubuntu_bold.xml" value="0.2064814814814815" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/layout/activity_create_note.xml" value="0.3541666666666667" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/layout/item_container_note.xml" value="0.1" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/layout/layout_add_url.xml" value="0.2861111111111111" />
+        <entry key="..\:/fci 2020/computer programming/Mobile Projects/Notes App/app/src/main/res/layout/layout_miscellaneous.xml" value="0.2861111111111111" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
