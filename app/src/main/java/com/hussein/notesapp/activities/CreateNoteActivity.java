@@ -69,6 +69,9 @@ public class CreateNoteActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
 
     private AlertDialog dialogAddURL;
+    private AlertDialog dialogDeleteNote;
+
+    private Note alreadyAvailableNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,10 +110,68 @@ public class CreateNoteActivity extends AppCompatActivity {
         selectedNoteColor = "#333333";  //Default note color
         selectedImagePath = "";
 
+        //isViewORUpdate & note is from intent in the MainActivity
+        if (getIntent().getBooleanExtra("isViewORUpdate", false)) {
+            alreadyAvailableNote = (Note) getIntent().getSerializableExtra("Note");
+            setViewOrUpdateNote();
+        }
+
+        findViewById(R.id.imageRemoveWebURL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textWebURL.setText(null);
+                layoutWebURL.setVisibility(View.GONE);
+            }
+        });
+
+        findViewById(R.id.imageRemoveImage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageNote.setImageBitmap(null);
+                imageNote.setVisibility(View.GONE);
+                findViewById(R.id.imageRemoveImage).setVisibility(View.GONE);
+                selectedImagePath = "";
+            }
+        });
+
+        if (getIntent().getBooleanExtra("isFromQuickActions", false)) {
+            String type = getIntent().getStringExtra("quickActionType");
+            if (type != null) {
+                if (type.equals("image")) {
+                    selectedImagePath = getIntent().getStringExtra("imagePath");
+                    imageNote.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath));
+                    imageNote.setVisibility(View.VISIBLE);
+                    findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+                } else if (type.equals("URL")) {
+                    textWebURL.setText(getIntent().getStringExtra("URL"));
+                    layoutWebURL.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
         //the bottom sheet now supports both swipes and click
         initMiscellaneous();
         setSubtitleIndicatorColor();
 
+    }
+
+    private void setViewOrUpdateNote() {
+        inputNoteTitle.setText(alreadyAvailableNote.getTitle());
+        inputNoteSubtitle.setText(alreadyAvailableNote.getSubtitle());
+        inputNoteText.setText(alreadyAvailableNote.getNoteText());
+        textDateTime.setText(alreadyAvailableNote.getDateTime());
+
+        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
+            imageNote.setVisibility(View.VISIBLE);
+            findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvailableNote.getImagePath();
+        }
+
+        if (alreadyAvailableNote.getWebLink() != null && !alreadyAvailableNote.getWebLink().trim().isEmpty()) {
+            textWebURL.setText(alreadyAvailableNote.getWebLink());
+            layoutWebURL.setVisibility(View.VISIBLE);
+        }
     }
 
     private void saveNote() {
@@ -134,8 +195,18 @@ public class CreateNoteActivity extends AppCompatActivity {
         We have checked if "layoutWebURL" is visible or no. If it is visible it means web URL is added
         since we have made it visible only while adding web URL from add URL dialog.
          */
-        if(layoutWebURL.getVisibility()==View.VISIBLE){
+        if (layoutWebURL.getVisibility() == View.VISIBLE) {
             note.setWebLink(textWebURL.getText().toString());
+        }
+
+        /*
+        Here, we are setting id of new note from an already available note.
+        Since we have set onConflictStrategy to "REPLACE" in NoteDao.
+        This means id id of new note is already available in the database then
+        it will be replace with new note and our note get updated.
+         */
+        if (alreadyAvailableNote != null) {
+            note.setId(alreadyAvailableNote.getId());
         }
 
         @SuppressLint("StaticFieldLeak")
@@ -160,7 +231,6 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void initMiscellaneous() {
-
         final LinearLayout layoutMiscellaneous = findViewById(R.id.layoutMiscellaneous);
         final BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous);
         layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(new View.OnClickListener() {
@@ -250,6 +320,24 @@ public class CreateNoteActivity extends AppCompatActivity {
             }
         });
 
+        if (alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
+            switch (alreadyAvailableNote.getColor()) {
+                case "#FDBE38":
+                    layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
+                    break;
+                case "#FF4842":
+                    layoutMiscellaneous.findViewById(R.id.viewColor3).performClick();
+                    break;
+                case "#3A52Fc":
+                    layoutMiscellaneous.findViewById(R.id.viewColor4).performClick();
+                    break;
+                case "#000000":
+                    layoutMiscellaneous.findViewById(R.id.viewColor5).performClick();
+                    break;
+
+            }
+        }
+
         layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,6 +361,70 @@ public class CreateNoteActivity extends AppCompatActivity {
             }
         });
 
+        /*
+        Here,if "alreadyAvailableNote" is not null then it means the user is viewing of updating
+        already added note from the database and therefore we are displaying delete note option.
+         */
+        if (alreadyAvailableNote != null) {
+            layoutMiscellaneous.findViewById(R.id.layoutDeleteNote).setVisibility(View.VISIBLE);
+            layoutMiscellaneous.findViewById(R.id.layoutDeleteNote).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    showDeleteNoteDialog();
+
+                }
+            });
+        }
+    }
+
+    private void showDeleteNoteDialog() {
+        if (dialogDeleteNote == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
+            View view = LayoutInflater.from(this).inflate(R.layout.layout_delete_note, (ViewGroup) findViewById(R.id.layoutDeleteNoteContainer));
+            builder.setView(view);
+            dialogDeleteNote = builder.create();
+            if (dialogDeleteNote.getWindow() != null) {
+                dialogDeleteNote.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+            }
+            view.findViewById(R.id.textDeleteNote).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    @SuppressLint("StaticFieldLeak")
+                    class DeleteNoteTask extends AsyncTask<Void, Void, Void> {
+
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            NotesDatabase.getDatabase(getApplicationContext()).noteDao()
+                                    .deleteNote(alreadyAvailableNote);
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void unused) {
+                            super.onPostExecute(unused);
+                            Intent intent = new Intent();
+                            intent.putExtra("isNoteDelete", true);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    }
+
+                    new DeleteNoteTask().execute();
+
+                }
+            });
+
+            view.findViewById(R.id.textCancel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogDeleteNote.dismiss();
+
+                }
+            });
+        }
+
+        dialogDeleteNote.show();
     }
 
 
@@ -316,6 +468,8 @@ public class CreateNoteActivity extends AppCompatActivity {
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         imageNote.setImageBitmap(bitmap);
                         imageNote.setVisibility(View.VISIBLE);
+                        findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+
 
                         selectedImagePath = getPathFromUri(selectedImageUri);
                     } catch (Exception exception) {
@@ -348,12 +502,12 @@ public class CreateNoteActivity extends AppCompatActivity {
             View view = LayoutInflater.from(this).inflate(R.layout.layout_add_url, (ViewGroup) findViewById(R.id.layoutAddUrlContainer));
             builder.setView(view);
 
-            dialogAddURL=builder.create();
+            dialogAddURL = builder.create();
             if (dialogAddURL.getWindow() != null) {
                 dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
             }
 
-            final EditText inputURL=view.findViewById(R.id.inputURL);
+            final EditText inputURL = view.findViewById(R.id.inputURL);
             inputURL.requestFocus();
 
             view.findViewById(R.id.textAdd).setOnClickListener(new View.OnClickListener() {
@@ -361,9 +515,9 @@ public class CreateNoteActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (inputURL.getText().toString().trim().isEmpty()) {
                         Toast.makeText(CreateNoteActivity.this, "Enter URL", Toast.LENGTH_SHORT).show();
-                    }else if(!Patterns.WEB_URL.matcher(inputURL.getText().toString()).matches()){
+                    } else if (!Patterns.WEB_URL.matcher(inputURL.getText().toString()).matches()) {
                         Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         textWebURL.setText(inputURL.getText().toString());
                         layoutWebURL.setVisibility(View.VISIBLE);
                         dialogAddURL.dismiss();
